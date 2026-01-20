@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amit Decorations Events | Curators of Grandeur</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --bg-dark: #050505;
+            --bg-card: #0a0a0a;
+            --gold-primary: #D4AF37;
+            --gold-light: #F3E5AB;
+            --gold-dark: #aa8c2c;
+            /* Royal Red Palette */
+            --royal-red: #720e1e; 
+            --royal-red-highlight: #901a2d;
+            --royal-red-shadow: #3a030b;
+            
+            --text-ivory: #E0E0E0;
+            --text-muted: #888888;
+            --font-display: 'Cinzel', serif;
+            --font-body: 'Cormorant Garamond', serif;
+            --font-ui: 'Montserrat', sans-serif;
+            --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-ivory);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            font-size: 18px;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        /* --- VISIBLE FILM GRAIN --- */
+        body::after {
+            content: "";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9000;
+            opacity: 0.09; 
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%" height="100%" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        }
+
+        /* --- LAYER 1: AMBIENT ORBS --- */
+        .ambient-light-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: -2; pointer-events: none;
+        }
+        .light-orb {
+            position: absolute; border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.08; 
+            animation: moveOrb 60s linear infinite;
+        }
+        .orb-1 { top: -20%; left: -10%; width: 50vw; height: 50vw; background: var(--gold-dark); animation-duration: 75s; }
+        .orb-2 { bottom: -30%; right: -20%; width: 60vw; height: 60vw; background: #5a0010; animation-delay: -30s; animation-direction: reverse; }
+        @keyframes moveOrb {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(10%, 20%) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* --- LAYER 2: GOLDEN SNOWFALL --- */
+        #particle-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+        }
+
+        /* --- UTILITIES --- */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+        .gold-text {
+            color: var(--gold-primary);
+            background: linear-gradient(135deg, var(--gold-light) 10%, var(--gold-primary) 50%, var(--gold-dark) 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        /* ADJUSTED: Reduced padding for tighter layout */
+        .section-padding { padding: 90px 0; position: relative; z-index: 2; }
+        
+        /* Typography */
+        h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 400; }
+        h1 { font-size: clamp(3rem, 5vw, 7rem); line-height: 1.05; }
+        h2 { font-size: clamp(2rem, 3vw, 4rem); margin-bottom: 1rem; }
+        p { color: var(--text-muted); font-size: 1.15rem; max-width: 65ch; }
+
+        /* --- BUTTONS --- */
+        .btn-royal {
+            display: inline-block; padding: 1.2rem 3.5rem;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            color: var(--gold-primary); text-decoration: none;
+            font-family: var(--font-ui); text-transform: uppercase; letter-spacing: 0.2em;
+            font-size: 0.85rem; font-weight: 600;
+            transition: all 0.6s var(--ease-luxury); position: relative; overflow: hidden;
+            background: transparent; cursor: pointer; z-index: 1;
+        }
+        .btn-royal::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 0; height: 100%;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold-primary));
+            z-index: -1; transition: width 0.5s var(--ease-luxury);
+        }
+        .btn-royal:hover { color: var(--bg-dark); border-color: transparent; }
+        .btn-royal:hover::before { width: 100%; }
+
+        /* --- HEADER & NAV --- */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            transition: all 0.4s ease;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+        }
+        nav.scrolled {
+            background: rgba(5, 0, 0, 0.95);
+            backdrop-filter: blur(15px); border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .nav-container-wrapper { padding: 1.5rem 0; transition: padding 0.3s; }
+        nav.scrolled .nav-container-wrapper { padding: 0.8rem 0; }
+        
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: var(--font-display); font-size: 1.4rem; font-weight: 1000; color: var(--text-ivory); letter-spacing: 0.1em; }
+        
+        .nav-links { display: flex; gap: 4rem; list-style: none; }
+        .nav-links a {
+            color: var(--text-ivory); text-decoration: none; font-family: var(--font-ui);
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.2em;
+            transition: color 0.3s; opacity: 0.8;
+        }
+        .nav-links a:hover { opacity: 1; color: var(--gold-primary); }
+
+        /* --- DISCOUNT BANNER --- */
+        .royal-banner {
+            width: 100%;
+            background: linear-gradient(90deg, var(--royal-red-shadow), var(--royal-red), var(--royal-red-shadow));
+            text-align: center;
+            padding: 8px 0;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            transform: translateY(0);
+        }
+        .banner-text {
+            font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 0.15em; color: #fff; text-transform: uppercase;
+        }
+        .banner-gold { color: var(--gold-light); font-weight: 700; }
+
+        /* Mobile Menu */
+        .menu-toggle {
+            display: none; color: var(--gold-primary); font-size: 1.5rem; cursor: pointer;
+            z-index: 1002;
+        }
+
+        .side-drawer {
+            position: fixed; top: 0; right: 0; width: 75%; max-width: 300px; height: 100vh;
+            background: linear-gradient(to bottom, #1a0505, #0a0000);
+            border-left: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: -10px 0 50px rgba(0,0,0,0.8);
+            transform: translateX(100%);
+            transition: transform 0.5s var(--ease-luxury);
+            z-index: 1001;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .side-drawer.open { transform: translateX(0); }
+        .side-drawer ul { list-style: none; text-align: center; padding: 0; }
+        .side-drawer li { margin: 2rem 0; opacity: 0; transform: translateY(20px); transition: 0.5s ease; }
+        .side-drawer.open li { opacity: 1; transform: translateY(0); }
+        .side-drawer.open li:nth-child(1) { transition-delay: 0.1s; }
+        .side-drawer.open li:nth-child(2) { transition-delay: 0.2s; }
+        .side-drawer.open li:nth-child(3) { transition-delay: 0.3s; }
+        .side-drawer.open li:nth-child(4) { transition-delay: 0.4s; }
+
+        .side-drawer a {
+            font-family: var(--font-display); font-size: 1.3rem; color: var(--text-ivory);
+            text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em;
+        }
+        
+        .menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            z-index: 1000; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .menu-overlay.active { opacity: 1; pointer-events: all; }
+
+        /* --- HERO SECTION --- */
+        .hero { height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .hero-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1519225421980-715cb0202128?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover; background-position: center;
+            will-change: transform;
+        }
+        .hero-content {
+            text-align: center; max-width: 900px; padding: 0 1rem; z-index: 3;
+            opacity: 0; transform: translateY(40px);
+            animation: fadeUp 1.8s var(--ease-luxury) 0.5s forwards;
+        }
+        .hero-subtitle {
+            font-family: var(--font-ui); color: var(--gold-primary); text-transform: uppercase;
+            letter-spacing: 0.5em; font-size: 0.85rem; margin-bottom: 2rem; display: block; font-weight: 600;
+        }
+
+        /* --- ABOUT --- */
+        .about-grid { display: block; max-width: 800px; margin: 0 auto; text-align: center; }
+
+        /* --- SERVICES --- */
+        /* ADJUSTED: Reduced margin top */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 3rem; margin-top: 3rem; }
+        .service-card {
+            background: linear-gradient(145deg, #0a0a0a, #0f0f0f);
+            padding: 4rem 3rem; text-align: left;
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.5s var(--ease-luxury);
+            position: relative; overflow: hidden;
+        }
+        .service-card:hover { transform: translateY(-15px); border-color: rgba(212, 175, 55, 0.3); }
+        .service-icon { font-size: 3rem; color: var(--gold-primary); margin-bottom: 2rem; display: block;}
+
+        /* --- PORTFOLIO --- */
+        .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 350px); gap: 15px; }
+        .gallery-item { position: relative; overflow: hidden; cursor: pointer; }
+        
+        .reveal-image-container::after, .gallery-item::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10;
+            background: repeating-linear-gradient(90deg, var(--royal-red-shadow) 0%, var(--royal-red) 10%, var(--royal-red-highlight) 15%, var(--royal-red) 20%, var(--royal-red-shadow) 25%);
+            box-shadow: -15px 0 40px rgba(0,0,0,0.8);
+            transform: translateY(0); transition: transform 1.8s var(--ease-luxury);
+        }
+        
+        .reveal-image-container.active::after { transform: translateX(105%); }
+        .gallery-item.active::after { transform: translateY(-105%); }
+
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease-luxury); transform: scale(1.1); }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .g-1 { grid-column: 1 / 3; } .g-2 { grid-column: 3 / 5; } .g-4 { grid-column: 2 / 4; }
+
+        .overlay-text {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 2.5rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.5), transparent);
+            opacity: 0; transition: all 0.6s ease; z-index: 11;
+        }
+        @media (min-width: 993px) {
+            .gallery-item:hover .overlay-text { opacity: 1; padding-bottom: 3rem; }
+        }
+
+        /* --- CONTACT --- */
+        .contact-section {
+            background: linear-gradient(rgba(5,5,5,0.95), rgba(5,5,5,0.8)), url('https://images.unsplash.com/photo-1542038784456-1ea8c935640e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover; background-position: center; text-align: center;
+        }
+        /* ADJUSTED: Reduced margin top */
+        .form-box {
+            max-width: 600px; margin: 3rem auto 0;
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 4rem; border: 1px solid rgba(212, 175, 55, 0.1);
+            box-shadow: 0 20px 50px -20px rgba(0,0,0,0.8);
+        }
+        .input-field {
+            width: 100%; background: transparent; border: none; border-bottom: 1px solid #333;
+            color: var(--text-ivory); padding: 0.8rem 0; font-family: var(--font-body); font-size: 1.3rem;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .input-field:focus { outline: none; border-bottom-color: var(--gold-primary); background: rgba(255,255,255,0.02); }
+        select.input-field { color: var(--text-muted); }
+        select.input-field:focus { color: var(--text-ivory); }
+
+        /* ADJUSTED: Footer padding reduced */
+        footer { border-top: 1px solid #1a1a1a; padding: 3rem 0; text-align: center; font-family: var(--font-ui); font-size: 0.8rem; color: #666; background: #030303;}
+
+        /* --- ANIMATIONS STATE CLASSES --- */
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        .reveal-text { opacity: 0; transform: translateY(50px); transition: all 1.2s var(--ease-luxury); }
+        .reveal-text.active { opacity: 1; transform: translateY(0); }
+
+        /* --- MOBILE RESPONSIVENESS FIXES --- */
+        @media (max-width: 992px) {
+            .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 300px); }
+            .g-1, .g-2, .g-4 { grid-column: span 2; }
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.3rem; line-height: 1.2; }
+            h2 { font-size: 1.8rem; }
+            .hero-subtitle { letter-spacing: 0.3em; font-size: 0.75rem; margin-bottom: 1rem;}
+            .hero p { font-size: 1rem; line-height: 1.5; margin: 1.5rem auto !important; max-width: 90%; }
+
+            .nav-container-wrapper { padding: 1rem 0; }
+            
+            /* ADJUSTED: Tighter mobile padding */
+            .section-padding { padding: 60px 0; }
+            
+            .gallery-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+            .g-1, .g-2, .g-4 { grid-column: span 1; }
+            .gallery-item { height: 300px; }
+            
+            .overlay-text {
+                opacity: 1; padding: 1.5rem;
+                background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.6), transparent);
+            }
+            .form-box { padding: 2rem; }
+            .btn-royal { padding: 1rem 2.5rem; width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-light-container">
+        <div class="light-orb orb-1"></div>
+        <div class="light-orb orb-2"></div>
+    </div>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <nav id="navbar">
+        <div class="container nav-container-wrapper">
+            <div class="nav-inner">
+                <div class="logo"> .AMIT<span class="gold-text">.DECORATIONS</span></div>
+                
+                <ul class="nav-links">
+                    <li><a href="#about">The Legacy</a></li>
+                    <li><a href="#services">Offerings</a></li>
+                    <li><a href="#portfolio">Grandeur</a></li>
+                    <li><a href="#contact">Inquire</a></li>
+                </ul>
+
+                <div class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </div>
+        </div>
+        <div class="royal-banner">
+            <div class="banner-text">
+                <i class="fa-solid fa-gem" style="color: var(--gold-primary); margin-right: 8px;"></i>
+                Royal Wedding Season: <span class="banner-gold">20% Off</span> Pre-Bookings
+            </div>
+        </div>
+    </nav>
+
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+
+    <div class="side-drawer" id="sideDrawer">
+        <ul>
+            <li><a href="#about" onclick="closeMenu()">The Legacy</a></li>
+            <li><a href="#services" onclick="closeMenu()">Offerings</a></li>
+            <li><a href="#portfolio" onclick="closeMenu()">Grandeur</a></li>
+            <li><a href="#contact" onclick="closeMenu()">Inquire</a></li>
+        </ul>
+    </div>
+
+    <header class="hero">
+        <div class="hero-bg" id="parallax-bg"></div>
+        <div class="hero-content">
+            <span class="hero-subtitle">Naubatpur • Patna • Bihar</span>
+            <h1>Orchestrating <br> <span class="gold-text">Eternal</span> Moments</h1>
+            <p>The premier event atelier for those who demand nothing less than perfection.</p>
+            <a href="#contact" class="btn-royal magnetic-btn">Request Consultation</a>
+        </div>
+    </header>
+
+    <section id="about" class="section-padding">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-text reveal-text">
+                    <span class="gold-text" style="font-family: var(--font-ui); letter-spacing: 0.2em; font-size: 0.8rem; font-weight: 600;">ESTABLISHED 2017</span>
+                    <h2 style="margin-top: 1rem;">We Do Not Just Plan.<br>We Curate <span class="gold-text">Legacy.</span></h2>
+                    <p style="margin-bottom: 2rem;">At Amit DECORATIONS Events, we believe a celebration is not merely a gathering, but a piece of living art. Based in the heart of Naubatpur, we have spent years transforming ordinary spaces into palaces of memory.</p>
+                    <p>Our philosophy is rooted in precision. Every floral arrangement, every beam of light, and every note of sound is meticulously calculated to create an atmosphere of effortless luxury.</p>
+                    <br>
+                    <div style="font-family: var(--font-display); font-size: 1.3rem; color: var(--text-ivory); margin-top: 2rem;">Amit Kumar</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-primary);">Lead Curator</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="section-padding">
+        <div class="container">
+            <div class="text-center reveal-text" style="text-align: center; max-width: 700px; margin: 0 auto 3rem auto;">
+                <span class="gold-text" style="font-family: var(--font-ui); letter-spacing: 0.2em; font-size: 0.8rem; font-weight: 600;">OUR EXPERTISE</span>
+                <h2>The Royal <span class="gold-text">Services</span></h2>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card reveal-text" style="transition-delay: 0.1s;">
+                    <i class="fa-solid fa-crown service-icon"></i>
+                    <h3>Imperial Weddings</h3>
+                    <p>From the Mandap to the Vidai, we craft a narrative of love draped in gold, silk, and fresh blooms. Custom stage fabrication and royal entry concepts.</p>
+                </div>
+                <div class="service-card reveal-text" style="transition-delay: 0.2s;">
+                    <i class="fa-solid fa-music service-icon"></i>
+                    <h3>Acoustic Symphony</h3>
+                    <p>Forget standard DJ setups. We provide high-fidelity auditory experiences, JBL pro-line arrays, and live orchestral coordination for an immersive ambiance.</p>
+                </div>
+                <div class="service-card reveal-text" style="transition-delay: 0.3s;">
+                    <i class="fa-solid fa-video service-icon"></i>
+                    <h3>Cinematic Archival</h3>
+                    <p>We capture the soul of the event. 4K Drone cinematography and candid portraiture to immortalize your lineage in film-grade quality.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio" class="section-padding">
+        <div class="container">
+            <div style="margin-bottom: 3rem; text-align: center;" class="reveal-text">
+                <h2>A Glimpse of <span class="gold-text">Grandeur</span></h2>
+            </div>
+            
+            <div class="gallery-grid">
+                <div class="gallery-item g-1">
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Wedding Hall">
+                    <div class="overlay-text">
+                        <h3>The Golden Mandap</h3>
+                        <p style="color: var(--gold-light); font-size: 0.9rem;">Bihta Estate</p>
+                    </div>
+                </div>
+                <div class="gallery-item g-2" style="transition-delay: 0.2s;">
+                    <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Bridal Entry">
+                    <div class="overlay-text">
+                        <h3>Royal Bridal Procession</h3>
+                        <p style="color: var(--gold-light); font-size: 0.9rem;">Patna City</p>
+                    </div>
+                </div>
+                <div class="gallery-item g-3" style="transition-delay: 0.3s;">
+                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="DJ Setup">
+                </div>
+                <div class="gallery-item g-4" style="transition-delay: 0.4s;">
+                    <img src="https://images.unsplash.com/photo-1505236858219-8359eb29e329?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dining Decor">
+                </div>
+                <div class="gallery-item g-5" style="transition-delay: 0.5s;">
+                    <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Details">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section-padding contact-section">
+        <div class="container reveal-text">
+            <span class="gold-text" style="font-family: var(--font-ui); letter-spacing: 0.2em; font-size: 0.8rem; font-weight: 600;">EXCLUSIVE BOOKINGS</span>
+            <h2 style="color: white;">Secure Your Date</h2>
+            <p style="color: #ddd; margin: auto;">The calendar for the upcoming Lagan season is closing. Inquire for availability.</p>
+
+            <div class="form-box">
+                <form onsubmit="event.preventDefault(); alert('Thank you. Our concierge will contact you shortly.');">
+                    <div class="input-group" style="margin-bottom: 2rem; text-align: left;">
+                        <label style="font-family: var(--font-ui); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-primary); display: block; margin-bottom: 0.5rem;">Your Name</label>
+                        <input type="text" class="input-field" required>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 2rem; text-align: left;">
+                        <label style="font-family: var(--font-ui); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-primary); display: block; margin-bottom: 0.5rem;">Contact Number</label>
+                        <input type="tel" class="input-field" required>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 3rem; text-align: left;">
+                        <label style="font-family: var(--font-ui); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-primary); display: block; margin-bottom: 0.5rem;">Event Type</label>
+                        <select class="input-field">
+                            <option value="" style="color: black;">Select Event Type</option>
+                            <option value="wedding" style="color: black;">Royal Wedding</option>
+                            <option value="reception" style="color: black;">Grand Reception</option>
+                            <option value="corporate" style="color: black;">Corporate Gala</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-royal magnetic-btn" style="width: 100%;">Submit Inquiry</button>
+                </form>
+                <div style="margin-top: 3rem; font-size: 0.9rem; color: #bbb; font-family: var(--font-ui);">
+                    <p><i class="fa-solid fa-phone" style="color: var(--gold-primary); margin-right: 10px;"></i> +91 96314 60987</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="logo" style="margin-bottom: 1.5rem; color: #555;">AMIT<span style="color: #777;"> DECORATIONS</span></div>
+            <p style="font-size: 0.9rem;">&copy; 2026 Amit DECORATIONS Events & Decorations. <br>Crafted for the Elite in Naubatpur.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- VISIBLE GOLDEN SNOWFALL ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.directionX = (Math.random() * 0.4) - 0.2; 
+                this.directionY = (Math.random() * 1.5) + 0.5; // Faster drop
+                this.size = (Math.random() * 3) + 1; // Larger particles
+                const colors = ['rgba(212, 175, 55, 0.9)', 'rgba(255, 223, 0, 0.7)', 'rgba(255, 255, 255, 0.6)'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) { this.directionX = -this.directionX; }
+                if (this.y > canvas.height) {
+                    this.y = 0 - this.size;
+                    this.x = Math.random() * canvas.width;
+                }
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 7000; 
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+        }
+
+        window.addEventListener('resize', function() {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            init();
+        });
+
+        init();
+        animate();
+
+        // --- MENU LOGIC ---
+        const drawer = document.getElementById('sideDrawer');
+        const overlay = document.getElementById('menuOverlay');
+
+        function toggleMenu() {
+            drawer.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            drawer.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        // --- SCROLL EFFECTS ---
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+            
+            const scrolled = window.pageYOffset;
+            const parallaxBg = document.getElementById('parallax-bg');
+            parallaxBg.style.transform = 'translateY(' + (scrolled * 0.4) + 'px) scale(1.1)';
+        });
+
+        // --- INTERSECTION OBSERVERS ---
+        const textObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal-text').forEach(el => textObserver.observe(el));
+
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    imageObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.25 });
+
+        document.querySelectorAll('.gallery-item').forEach(el => imageObserver.observe(el));
+        
+        // --- MAGNETIC BUTTONS ---
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const position = btn.getBoundingClientRect();
+                const x = e.pageX - position.left - position.width / 2;
+                const y = e.pageY - position.top - position.height / 2;
+                btn.style.transform = `translate(${x * 0.15}px, ${y * 0.2}px)`;
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0px, 0px)';
+            });
+        });
+    </script>
+</body>
+</html>
